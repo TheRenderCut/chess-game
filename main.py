@@ -100,6 +100,35 @@ def is_valid_bishop_move(piece,start_row,start_col,end_row,end_col):
     else:
         print("Invalid Move!")
         return False
+def is_valid_knight_move(piece,start_row,start_col,end_row,end_col):
+    row_diff = abs(start_row - end_row)
+    col_diff = abs(start_col - end_col)
+    if row_diff == 1 and col_diff == 2:
+        target = board[end_row][end_col]
+        if target == ' ':
+            return True
+        if piece.isupper() != target.isupper():
+            return True
+        else:
+            print("Invalid Move!")
+            return False
+    elif row_diff == 2 and col_diff == 1:
+        target = board[end_row][end_col]
+        if target == ' ':
+            return True
+        if piece.isupper() != target.isupper():
+            return True
+        else:
+            print("Invalid Move!")
+            return False
+    else:
+        print("Invalid Move!")
+        return False
+def is_valid_queen_move(piece,start_row,start_col,end_row,end_col):
+    if is_valid_bishop_move(piece,start_row,start_col,end_row,end_col) or is_valid_rook_move(piece,start_row,start_col,end_row,end_col):
+        return True
+    else:
+        return False
 def choose_piece():
     move = input(("Enter Your Move (Ex. e2 e4): "))
     start, end = move.split()
@@ -123,6 +152,18 @@ def choose_piece():
             change_turn()
     elif piece.lower() == 'r':
         if is_valid_rook_move(piece,start_row, start_col, end_row, end_col):
+            move_piece(piece,start_row,start_col,end_row,end_col)
+            change_turn()
+    elif piece.lower() == 'b':
+        if is_valid_bishop_move(piece,start_row, start_col, end_row, end_col):
+            move_piece(piece,start_row,start_col,end_row,end_col)
+            change_turn()
+    elif piece.lower() == 'n':
+        if is_valid_knight_move(piece,start_row, start_col, end_row, end_col):
+            move_piece(piece,start_row,start_col,end_row,end_col)
+            change_turn()
+    elif piece.lower() == 'q':
+        if is_valid_queen_move(piece,start_row, start_col, end_row, end_col):
             move_piece(piece,start_row,start_col,end_row,end_col)
             change_turn()
 while True:
