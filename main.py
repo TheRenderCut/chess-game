@@ -71,6 +71,35 @@ def is_valid_rook_move(piece,start_row,start_col,end_row,end_col):
         else:
             print("Invalid Move!")
             return False
+def is_valid_bishop_move(piece,start_row,start_col,end_row,end_col):
+    if start_row == end_row or start_col == end_col:
+        print("Invalid Move!")
+        return False
+    if end_col > start_col:
+        step_col = 1
+    else:
+        step_col = -1
+    if end_row > start_row:
+        step_row = 1
+    else:
+        step_row = -1
+    if abs(start_row - end_row) == abs(start_col - end_col):
+        current_row = start_row + step_row
+        current_col = start_col + step_col
+        while current_row != end_row and current_col != end_col:
+            if board[current_row][current_col] != ' ':
+                print("Invalid Move!")
+                return False
+            current_row += step_row
+            current_col += step_col
+        target = board[end_row][end_col]
+        if target == ' ':
+            return True
+        if piece.isupper() != target.isupper():
+            return True
+    else:
+        print("Invalid Move!")
+        return False
 def choose_piece():
     move = input(("Enter Your Move (Ex. e2 e4): "))
     start, end = move.split()
