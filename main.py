@@ -8,10 +8,20 @@ board = [
     ["P","P","P","P","P","P","P","P"],
     ["R","N","B","Q","K","B","N","R"]
 ]
+current_turn = "white"
 def print_board(board):
     for num,line in enumerate(board):
         print(f"{8-num} {' | '.join(line)}")
     print("  a   b   c   d   e   f   g   h")
+def change_turn():
+    global current_turn
+    if current_turn == "white":
+        current_turn = "black"
+    else:
+        current_turn = "white"
+def move_piece(piece,start_row,start_col,end_row,end_col):
+    board[end_row][end_col] = piece
+    board[start_row][start_col] = ' '
 def is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
     if piece == 'P':
         starting_row = 6
@@ -30,8 +40,38 @@ def is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
         target = board[end_row][end_col]
         if target != ' ' and piece.isupper() != target.isupper():
             return True
+    print("Invalid Move!")
     return False
-def move_piece():
+def is_valid_rook_move(piece,start_row,start_col,end_row,end_col):
+        if start_row == end_row and start_col == end_col:
+            print("Invalid Move!")
+            return False
+        if start_col == end_col:
+            step = 1 if end_row > start_row else -1
+            for i in range(start_row + step, end_row, step):
+                if board[i][start_col] != ' ':
+                    print("Invalid Move!")
+                    return False
+            target = board[end_row][end_col]
+            if target == ' ':
+                return True
+            elif piece.isupper() != target.isupper():
+                return True
+        elif start_row == end_row:
+            step = 1 if end_col > start_col else -1
+            for i in range(start_col + step, end_col, step):
+                    if board[start_row][i] != ' ':
+                        print("Invalid Move!")
+                        return False
+            target = board[end_row][end_col]
+            if target == ' ':
+                return True
+            elif piece.isupper() != target.isupper():
+                return True
+        else:
+            print("Invalid Move!")
+            return False
+def choose_piece():
     move = input(("Enter Your Move (Ex. e2 e4): "))
     start, end = move.split()
     start_row = 8 - int(start[1])
@@ -39,9 +79,23 @@ def move_piece():
     end_row = 8 - int(end[1])
     end_col = ord(end[0]) - ord('a')
     piece = board[start_row][start_col]
-    if is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
-        board[end_row][end_col] = piece
-        board[start_row][start_col] = ' '
-        print_board(board)
-print_board(board)
-move_piece()
+    if piece == ' ':
+        print("No Piece Selected")
+        return
+    if current_turn == "white" and piece.islower():
+        print("Not your turn!")
+        return
+    if current_turn == "black" and piece.isupper():
+        print("Not your turn!")
+        return
+    if piece.lower() == 'p':
+        if is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
+            move_piece(piece,start_row,start_col,end_row,end_col)
+            change_turn()
+    elif piece.lower() == 'r':
+        if is_valid_rook_move(piece,start_row, start_col, end_row, end_col):
+            move_piece(piece,start_row,start_col,end_row,end_col)
+            change_turn()
+while True:
+    print_board(board)
+    choose_piece()
