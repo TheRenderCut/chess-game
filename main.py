@@ -22,6 +22,14 @@ def change_turn():
 def move_piece(piece,start_row,start_col,end_row,end_col):
     board[end_row][end_col] = piece
     board[start_row][start_col] = ' '
+def check_target(end_row,end_col,piece):
+    target = board[end_row][end_col]
+    if target == ' ':
+        return True
+    elif piece.isupper() != target.isupper():
+        return True
+    else:
+        return False
 def is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
     if piece == 'P':
         starting_row = 6
@@ -40,40 +48,28 @@ def is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
         target = board[end_row][end_col]
         if target != ' ' and piece.isupper() != target.isupper():
             return True
-    print("Invalid Move!")
     return False
 def is_valid_rook_move(piece,start_row,start_col,end_row,end_col):
         if start_row == end_row and start_col == end_col:
-            print("Invalid Move!")
             return False
         if start_col == end_col:
             step = 1 if end_row > start_row else -1
             for i in range(start_row + step, end_row, step):
                 if board[i][start_col] != ' ':
-                    print("Invalid Move!")
                     return False
-            target = board[end_row][end_col]
-            if target == ' ':
-                return True
-            elif piece.isupper() != target.isupper():
+            if check_target(end_row, end_col,piece):
                 return True
         elif start_row == end_row:
             step = 1 if end_col > start_col else -1
             for i in range(start_col + step, end_col, step):
                     if board[start_row][i] != ' ':
-                        print("Invalid Move!")
                         return False
-            target = board[end_row][end_col]
-            if target == ' ':
-                return True
-            elif piece.isupper() != target.isupper():
+            if check_target(end_row, end_col,piece):
                 return True
         else:
-            print("Invalid Move!")
             return False
 def is_valid_bishop_move(piece,start_row,start_col,end_row,end_col):
     if start_row == end_row or start_col == end_col:
-        print("Invalid Move!")
         return False
     if end_col > start_col:
         step_col = 1
@@ -88,45 +84,37 @@ def is_valid_bishop_move(piece,start_row,start_col,end_row,end_col):
         current_col = start_col + step_col
         while current_row != end_row and current_col != end_col:
             if board[current_row][current_col] != ' ':
-                print("Invalid Move!")
                 return False
             current_row += step_row
             current_col += step_col
-        target = board[end_row][end_col]
-        if target == ' ':
-            return True
-        if piece.isupper() != target.isupper():
-            return True
+        if check_target(end_row, end_col,piece):
+                return True
     else:
-        print("Invalid Move!")
         return False
 def is_valid_knight_move(piece,start_row,start_col,end_row,end_col):
     row_diff = abs(start_row - end_row)
     col_diff = abs(start_col - end_col)
     if row_diff == 1 and col_diff == 2:
-        target = board[end_row][end_col]
-        if target == ' ':
-            return True
-        if piece.isupper() != target.isupper():
-            return True
+        if check_target(end_row, end_col,piece):
+                return True
         else:
-            print("Invalid Move!")
             return False
     elif row_diff == 2 and col_diff == 1:
-        target = board[end_row][end_col]
-        if target == ' ':
-            return True
-        if piece.isupper() != target.isupper():
-            return True
-        else:
-            print("Invalid Move!")
-            return False
+        if check_target(end_row, end_col,piece):
+                return True
     else:
-        print("Invalid Move!")
         return False
 def is_valid_queen_move(piece,start_row,start_col,end_row,end_col):
     if is_valid_bishop_move(piece,start_row,start_col,end_row,end_col) or is_valid_rook_move(piece,start_row,start_col,end_row,end_col):
         return True
+    else:
+        return False
+def is_valid_king_move(piece,start_row,start_col,end_row,end_col):
+    if start_row == end_row and start_col == end_col:
+        return False
+    if abs(start_row - end_row) <= 1 and abs(start_col - end_col) <= 1:
+        if check_target(end_row, end_col,piece):
+                return True
     else:
         return False
 def choose_piece():
@@ -150,22 +138,40 @@ def choose_piece():
         if is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
             move_piece(piece,start_row,start_col,end_row,end_col)
             change_turn()
+        else:
+            print("Invalid Move!")
     elif piece.lower() == 'r':
         if is_valid_rook_move(piece,start_row, start_col, end_row, end_col):
             move_piece(piece,start_row,start_col,end_row,end_col)
             change_turn()
+        else:
+            print("Invalid Move!")
     elif piece.lower() == 'b':
         if is_valid_bishop_move(piece,start_row, start_col, end_row, end_col):
             move_piece(piece,start_row,start_col,end_row,end_col)
             change_turn()
+        else:
+            print("Invalid Move!")
     elif piece.lower() == 'n':
         if is_valid_knight_move(piece,start_row, start_col, end_row, end_col):
             move_piece(piece,start_row,start_col,end_row,end_col)
             change_turn()
+        else:
+            print("Invalid Move!")
     elif piece.lower() == 'q':
         if is_valid_queen_move(piece,start_row, start_col, end_row, end_col):
             move_piece(piece,start_row,start_col,end_row,end_col)
             change_turn()
+        else:
+            print("Invalid Move!")
+    elif piece.lower() == 'k':
+        if is_valid_king_move(piece,start_row, start_col, end_row, end_col):
+            move_piece(piece,start_row,start_col,end_row,end_col)
+            change_turn()
+        else:
+            print("Invalid Move!")
+    else:
+        print("Choose a piece on the board!")
 while True:
     print_board(board)
     choose_piece()
