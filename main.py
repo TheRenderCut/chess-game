@@ -9,6 +9,10 @@ board = [
     ["R","N","B","Q","K","B","N","R"]
 ]
 current_turn = "white"
+wking_row = 7
+wking_col = 4
+bking_row = 0
+bking_col = 4
 def print_board(board):
     for num,line in enumerate(board):
         print(f"{8-num} {' | '.join(line)}")
@@ -22,6 +26,17 @@ def change_turn():
 def move_piece(piece,start_row,start_col,end_row,end_col):
     board[end_row][end_col] = piece
     board[start_row][start_col] = ' '
+    if piece.lower() == 'k':
+        if current_turn == "white":
+                global wking_row
+                global wking_col
+                wking_row = end_row
+                wking_col = end_col
+        else:
+                global bking_row
+                global bking_col
+                bking_row = end_row
+                bking_col = end_col
 def check_target(end_row,end_col,piece):
     target = board[end_row][end_col]
     if target == ' ':
@@ -117,14 +132,101 @@ def is_valid_king_move(piece,start_row,start_col,end_row,end_col):
                 return True
     else:
         return False
-def choose_piece():
-    move = input(("Enter Your Move (Ex. e2 e4): "))
-    start, end = move.split()
-    start_row = 8 - int(start[1])
-    start_col = ord(start[0]) - ord('a')
-    end_row = 8 - int(end[1])
-    end_col = ord(end[0]) - ord('a')
+def is_check(turn):
+    global wking_row
+    global wking_col
+    global bking_row
+    global bking_col
+    if turn == "black":
+        end_row = wking_row
+        end_col = wking_col
+        for i in range(8):
+            for j in range(8):
+                piece = board[i][j]
+                if piece.islower():
+                    start_row = i
+                    start_col = j
+                    if validate_piece(piece,start_row, start_col, end_row, end_col):
+                        return True
+    else:
+        end_row = bking_row
+        end_col = bking_col
+        for i in range(8):
+            for j in range(8):
+                piece = board[i][j]
+                if piece.isupper():
+                    start_row = i
+                    start_col = j
+                    if validate_piece(piece,start_row, start_col, end_row, end_col):
+                        return True
+def game_end(target):
+    if target == 'k':
+        print_board(board)
+        print("Game Ended! White Won!!")
+        return True
+    elif target == 'K':
+        print_board(board)
+        print("Game Ended! White Won!!")
+        return True
+def validate_piece(piece,start_row, start_col, end_row, end_col):
+    if piece.lower() == 'p':
+        if is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
+            return True
+        else:
+            return False
+    elif piece.lower() == 'r':
+        if is_valid_rook_move(piece,start_row, start_col, end_row, end_col):
+            return True
+        else:
+            return False
+    elif piece.lower() == 'b':
+        if is_valid_bishop_move(piece,start_row, start_col, end_row, end_col):
+            return True
+        else:
+            return False
+    elif piece.lower() == 'n':
+        if is_valid_knight_move(piece,start_row, start_col, end_row, end_col):
+            return True
+        else:
+            return False
+    elif piece.lower() == 'q':
+        if is_valid_queen_move(piece,start_row, start_col, end_row, end_col):
+            return True
+        else:
+            return False
+    elif piece.lower() == 'k':
+        if is_valid_king_move(piece,start_row, start_col, end_row, end_col):
+            return True
+        else:
+            return False
+def is_valid_move(piece,start_row, start_col, end_row, end_col):
+    if validate_piece(piece,start_row, start_col, end_row, end_col):
+        move_piece(piece,start_row, start_col, end_row, end_col)
+        if current_turn == "white":
+            turn = "white"
+            if is_check(turn):
+                print("Black is in check")
+        else:
+            turn = "black"
+            if is_check(turn):
+                print("White is in check")
+        change_turn()
+        return True
+    else:
+        print("Invalid Move!")
+def choose_move():
+    try:
+        move = input(("Enter Your Move (Ex. e2 e4): "))
+        start, end = move.split()
+        start_row = 8 - int(start[1])
+        start_col = ord(start[0]) - ord('a')
+        end_row = 8 - int(end[1])
+        end_col = ord(end[0]) - ord('a')
+    except ValueError:
+        print("Invalid Input!")
+        return
     piece = board[start_row][start_col]
+    target = board[end_row][end_col]
     if piece == ' ':
         print("No Piece Selected")
         return
@@ -134,44 +236,13 @@ def choose_piece():
     if current_turn == "black" and piece.isupper():
         print("Not your turn!")
         return
-    if piece.lower() == 'p':
-        if is_valid_pawn_move(piece,start_row,start_col,end_row,end_col):
-            move_piece(piece,start_row,start_col,end_row,end_col)
-            change_turn()
-        else:
-            print("Invalid Move!")
-    elif piece.lower() == 'r':
-        if is_valid_rook_move(piece,start_row, start_col, end_row, end_col):
-            move_piece(piece,start_row,start_col,end_row,end_col)
-            change_turn()
-        else:
-            print("Invalid Move!")
-    elif piece.lower() == 'b':
-        if is_valid_bishop_move(piece,start_row, start_col, end_row, end_col):
-            move_piece(piece,start_row,start_col,end_row,end_col)
-            change_turn()
-        else:
-            print("Invalid Move!")
-    elif piece.lower() == 'n':
-        if is_valid_knight_move(piece,start_row, start_col, end_row, end_col):
-            move_piece(piece,start_row,start_col,end_row,end_col)
-            change_turn()
-        else:
-            print("Invalid Move!")
-    elif piece.lower() == 'q':
-        if is_valid_queen_move(piece,start_row, start_col, end_row, end_col):
-            move_piece(piece,start_row,start_col,end_row,end_col)
-            change_turn()
-        else:
-            print("Invalid Move!")
-    elif piece.lower() == 'k':
-        if is_valid_king_move(piece,start_row, start_col, end_row, end_col):
-            move_piece(piece,start_row,start_col,end_row,end_col)
-            change_turn()
-        else:
-            print("Invalid Move!")
-    else:
-        print("Choose a piece on the board!")
-while True:
-    print_board(board)
-    choose_piece()
+    if is_valid_move(piece,start_row, start_col, end_row, end_col):
+        return target
+def main():
+    while True:
+        print_board(board)
+        target = choose_move()
+        if game_end(target):
+            break
+if __name__ == "__main__":
+    main()
