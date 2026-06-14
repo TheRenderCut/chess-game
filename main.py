@@ -199,9 +199,45 @@ def validate_piece(piece,start_row, start_col, end_row, end_col):
             return True
         else:
             return False
+def pawn_promotion(end_row, end_col):
+    if end_row == 0:
+        print("Pawn Promoted!")
+        print("Queen (Type q)")
+        print("Bishop (Type b)")
+        print("Rook (Type r)")
+        print("Knight (Type n)")
+        prom_piece = input("Choose your piece:")
+        try:
+            if prom_piece.lower() == "q":
+                if current_turn == "white":
+                    board[end_row][end_col] = "Q"
+                else:
+                    board[end_row][end_col] = "q"
+            elif prom_piece.lower() == "b":
+                if current_turn == "white":
+                    board[end_row][end_col] = "B"
+                else:
+                    board[end_row][end_col] = "b"
+            elif prom_piece.lower() == "r":
+                if current_turn == "white":
+                    board[end_row][end_col] = "R"
+                else:
+                    board[end_row][end_col] = "r"
+            elif prom_piece.lower() == "n":
+                if current_turn == "white":
+                    board[end_row][end_col] = "N"
+                else:
+                    board[end_row][end_col] = "n"
+            else:
+                print("Invalid Input!")
+                pawn_promotion(end_row, end_col)
+        except ValueError:
+            print("Invalid Input")
+            pawn_promotion(end_row, end_col)
 def is_valid_move(piece,start_row, start_col, end_row, end_col):
     if validate_piece(piece,start_row, start_col, end_row, end_col):
         move_piece(piece,start_row, start_col, end_row, end_col)
+        pawn_promotion(end_row, end_col)
         if current_turn == "white":
             turn = "white"
             if is_check(turn):
